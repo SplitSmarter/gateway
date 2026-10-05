@@ -1,0 +1,97 @@
+spring:
+  application:
+    name: gateway
+
+  webflux:
+    multipart:
+      max-in-memory-size: 10MB
+      max-request-size: 10MB
+  codec:
+    max-in-memory-size: 10MB
+
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5431/gateway
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    initializer:
+      enabled: true
+    platform: postgresql
+    schema: classpath:schema.sql
+
+  sql:
+    init:
+      mode: never
+  web:
+    locale: en
+    locale-resolver: fixed
+  messages:
+    basename: i18n/translations/messages
+    encoding: UTF-8
+    fallback-to-system-locale: false
+
+server:
+  port: 8080
+  address: "0.0.0.0"
+
+
+service:
+  user:
+    hostname: ${USER_BACKEND_URL}
+    port: 8081
+  mail:
+    host: ${USER_BACKEND_URL}
+    port: 8082
+
+SHARED_SECRET: ${SHARED_SECRET}
+PRIVATE_KEY_PATH: ${PRIVATE_KEY_PATH}
+PUBLIC_KEY_PATH: ${PUBLIC_KEY_PATH}
+MICROSERVICES_SECRET: ${MICROSERVICES_SECRET}
+INTERNAL_SECRET: ${INTERNAL_SECRET}
+GOOGLE_WEB_CLIENT_ID: ${GOOGLE_WEB_CLIENT_ID}
+USER_SERVICE_HOSTNAME: ${USER_BACKEND_URL}
+MAIL_SERVICE_HOSTNAME: ${MAIL_BACKEND_URL}
+
+# configurations
+otp:
+  expiration:
+    minutes: 15
+  max:
+    attempts: 5
+  resend:
+    limit: 5
+    lock:
+      seconds: 300
+  reverification:
+    seconds: 3000
+
+reset-password:
+  expiration:
+    minutes: 15
+  resend:
+    limit: 5
+    lock:
+      seconds: 300
+
+
+token:
+  validity:
+    refresh: ${REFRESH_TOKEN_VALIDITY_SECONDS}
+    access: ${ACCESS_TOKEN_VALIDITY_SECONDS}
+logging:
+  level:
+    root: info
+    com.onewordmax.splitsmart.gateway: debug
+    org.springframework.web.reactive: debug
+  file:
+    name: logs/gateway.log
+
+sun:
+  rmi:
+    transport:
+      tcp:
+        logLevel: DEBUG
+    loader:
+      logLevel: DEBUG
+javax:
+  management:
+    debug: all

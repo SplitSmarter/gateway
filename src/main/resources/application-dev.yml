@@ -1,0 +1,71 @@
+spring:
+  application:
+    name: gateway
+
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5431/gateway
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+
+  sql:
+    init:
+      mode: never
+
+server:
+  port: 8080
+  address: "0.0.0.0"
+
+service:
+  user:
+    hostname: ${USER_BACKEND_URL}
+    port: 8081
+  mail:
+    host: ${USER_BACKEND_URL}
+    port: 8082
+
+SHARED_SECRET: ${SHARED_SECRET}
+PRIVATE_KEY_PATH: ${PRIVATE_KEY_PATH}
+PUBLIC_KEY_PATH: ${PUBLIC_KEY_PATH}
+MICROSERVICES_SECRET: ${MICROSERVICES_SECRET}
+INTERNAL_SECRET: ${INTERNAL_SECRET}
+GOOGLE_WEB_CLIENT_ID: ${GOOGLE_WEB_CLIENT_ID}
+USER_SERVICE_HOSTNAME: ${USER_BACKEND_URL}
+MAIL_SERVICE_HOSTNAME: ${MAIL_BACKEND_URL}
+
+# configurations
+otp:
+  expiration:
+    minutes: 15
+  max:
+    attempts: 5
+  resend:
+    limit: 5
+    lock:
+      seconds: 300
+  reverification:
+    seconds: 3000
+
+reset-password:
+  expiration:
+    minutes: 15
+  resend:
+    limit: 5
+    lock:
+      seconds: 300
+
+
+token:
+  validity:
+    refresh: ${REFRESH_TOKEN_VALIDITY_SECONDS}
+    access: ${ACCESS_TOKEN_VALIDITY_SECONDS}
+logging:
+  level:
+    root: debug
+    com.onewordmax.splitsmart.gateway: info
+  file:
+    name: logs/gateway.log
+Dsun:
+  rmi:
+    transport:
+      tcp:
+        logLevel: INFO
