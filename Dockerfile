@@ -18,9 +18,12 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends curl \
  && rm -rf /var/lib/apt/lists/* \
  && groupadd --system spring \
- && useradd --system --gid spring --no-create-home spring
+ && useradd --system --gid spring --no-create-home spring \
+ && mkdir -p /app/logs/archived \
+ && chown -R spring:spring /app
 
 COPY --from=build /workspace/app.jar /app/app.jar
+RUN chown spring:spring /app/app.jar
 USER spring:spring
 
 EXPOSE 8080
