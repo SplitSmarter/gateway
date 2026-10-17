@@ -1,21 +1,9 @@
 name: Trigger Gateway Deployment
 
 # Manual only — does not run on push.
+# Pick the branch via GitHub's "Use workflow from" when running the workflow.
 on:
   workflow_dispatch:
-    inputs:
-      git_ref:
-        description: Branch to build and deploy
-        required: true
-        type: choice
-        options:
-          - dev
-          - develop
-          - qa
-          - test
-          - main
-          - release
-        default: dev
 
 permissions:
   contents: read
@@ -25,8 +13,7 @@ jobs:
   call-central-workflow:
     uses: SplitSmarter/ci-cd-workflows/.github/workflows/java-docker-deploy.yml@main
     with:
-      branch_name: ${{ format('refs/heads/{0}', inputs.git_ref) }}
-      git_ref: ${{ inputs.git_ref }}
+      branch_name: ${{ github.ref }}
       service_name: gateway
       project_root: "."
     secrets:
