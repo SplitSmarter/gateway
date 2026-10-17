@@ -5,8 +5,6 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -17,11 +15,11 @@ import java.util.Base64;
 @Component
 public class KeyLoader {
 
-    @Value("${PRIVATE_KEY_PATH}")
-    private String PRIVATE_KEY_PATH;
+    @Value("${PRIVATE_KEY}")
+    private String privateKeyPem;
 
-    @Value("${PUBLIC_KEY_PATH}")
-    private String PUBLIC_KEY_PATH;
+    @Value("${PUBLIC_KEY}")
+    private String publicKeyPem;
 
     @Getter
     private PrivateKey privateKey;
@@ -31,23 +29,25 @@ public class KeyLoader {
 
     @PostConstruct
     public void init() throws Exception {
-        byte[] privateKeyBytes = Files.readAllBytes(Paths.get(PRIVATE_KEY_PATH));
-        String privateKeyPem = new String(privateKeyBytes)
-                .replace("-----BEGIN PRIVATE KEY-----", "")
-                .replace("-----END PRIVATE KEY-----", "")
-                .replaceAll("\\s", "");
-        byte[] decodedPrivate = Base64.getDecoder().decode(privateKeyPem);
-        PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(decodedPrivate);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-        privateKey = keyFactory.generatePrivate(privateKeySpec);
+        privateKey = keyFactory.generatePrivate(new PKCS8EncodedKeySpec(decodePem(privateKeyPem, "PRIVATE KEY")));
+        publicKey = keyFactory.generatePublic(new X509EncodedKeySpec(decodePem(publicKeyPem, "PUBLIC KEY")));
+    }
 
-        byte[] publicKeyBytes = Files.readAllBytes(Paths.get(PUBLIC_KEY_PATH));
-        String publicKeyPem = new String(publicKeyBytes)
-                .replace("-----BEGIN PUBLIC KEY-----", "")
-                .replace("-----END PUBLIC KEY-----", "")
+    /**
+     * Accepts PEM from env: real newlines, or a single line with {@code \n} escapes.
+     */
+    static byte[] decodePem(String pem, String label) {
+        if (pem == null || pem.isBlank()) {
+            throw new IllegalStateException(label + " PEM is missing or empty");
+        }
+        String normalized = pem.trim()
+                .replace("\\n", "\n")
+                .replace("\\r", "");
+        String body = normalized
+                .replace("-----BEGIN " + label + "-----", "")
+                .replace("-----END " + label + "-----", "")
                 .replaceAll("\\s", "");
-        byte[] decodedPublic = Base64.getDecoder().decode(publicKeyPem);
-        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(decodedPublic);
-        publicKey = keyFactory.generatePublic(publicKeySpec);
+        return Base64.getDecoder().decode(body);
     }
 }

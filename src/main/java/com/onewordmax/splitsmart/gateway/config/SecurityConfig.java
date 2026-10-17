@@ -27,6 +27,17 @@ public class SecurityConfig {
     private final UserService userService;
 
     @Bean
+    @Order(0)
+    public SecurityWebFilterChain healthSecurityChain(ServerHttpSecurity http) {
+        return http
+                .securityMatcher(pathMatchers("/health"))
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .authorizeExchange(ex -> ex.anyExchange().permitAll())
+                .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
+                .build();
+    }
+
+    @Bean
     @Order(1)
     public SecurityWebFilterChain publicSecurityChain(ServerHttpSecurity http) {
         return http

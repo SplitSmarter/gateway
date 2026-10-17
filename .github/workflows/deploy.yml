@@ -1,0 +1,21 @@
+name: Trigger Gateway Deployment
+
+on:
+  push:
+    branches: [release, main, qa, test, develop, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  call-central-workflow:
+    uses: SplitSmarter/ci-cd-workflows/.github/workflows/java-docker-deploy.yml@main
+    with:
+      branch_name: ${{ github.ref }}
+      service_name: gateway
+      project_root: "."
+    secrets:
+      GHCR_USERNAME: ${{ secrets.GHCR_USERNAME }}
+      GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}

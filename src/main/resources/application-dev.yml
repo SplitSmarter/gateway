@@ -3,7 +3,7 @@ spring:
     name: gateway
 
   r2dbc:
-    url: r2dbc:postgresql://localhost:5431/gateway
+    url: ${SPRING_R2DBC_URL:r2dbc:postgresql://localhost:5431/gateway}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
 
@@ -20,12 +20,12 @@ service:
     hostname: ${USER_BACKEND_URL}
     port: 8081
   mail:
-    host: ${USER_BACKEND_URL}
+    host: ${MAIL_BACKEND_URL}
     port: 8082
 
 SHARED_SECRET: ${SHARED_SECRET}
-PRIVATE_KEY_PATH: ${PRIVATE_KEY_PATH}
-PUBLIC_KEY_PATH: ${PUBLIC_KEY_PATH}
+PRIVATE_KEY: ${PRIVATE_KEY}
+PUBLIC_KEY: ${PUBLIC_KEY}
 MICROSERVICES_SECRET: ${MICROSERVICES_SECRET}
 INTERNAL_SECRET: ${INTERNAL_SECRET}
 GOOGLE_WEB_CLIENT_ID: ${GOOGLE_WEB_CLIENT_ID}
