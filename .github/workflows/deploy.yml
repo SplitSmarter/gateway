@@ -4,6 +4,19 @@ on:
   push:
     branches: [release, main, qa, test, develop, dev]
   workflow_dispatch:
+    inputs:
+      git_ref:
+        description: Branch to build and deploy
+        required: true
+        type: choice
+        options:
+          - dev
+          - develop
+          - qa
+          - test
+          - main
+          - release
+        default: dev
 
 permissions:
   contents: read
@@ -13,7 +26,10 @@ jobs:
   call-central-workflow:
     uses: SplitSmarter/ci-cd-workflows/.github/workflows/java-docker-deploy.yml@main
     with:
-      branch_name: ${{ github.ref }}
+      # Inventory env mapping (refs/heads/…)
+      branch_name: ${{ github.event_name == 'workflow_dispatch' && format('refs/heads/{0}', inputs.git_ref) || github.ref }}
+      # Which commit/branch of this repo to checkout (manual run can pick any listed branch)
+      git_ref: ${{ github.event_name == 'workflow_dispatch' && inputs.git_ref || github.sha }}
       service_name: gateway
       project_root: "."
     secrets:

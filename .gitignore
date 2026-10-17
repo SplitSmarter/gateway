@@ -1,6 +1,7 @@
 HELP.md
 target/
-.mvn
+# Track Maven Wrapper (required for CI); ignore only the optional jar if present
+.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
