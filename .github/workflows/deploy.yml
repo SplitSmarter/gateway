@@ -1,8 +1,7 @@
 name: Trigger Gateway Deployment
 
+# Manual only — does not run on push.
 on:
-  push:
-    branches: [release, main, qa, test, develop, dev]
   workflow_dispatch:
     inputs:
       git_ref:
@@ -26,10 +25,8 @@ jobs:
   call-central-workflow:
     uses: SplitSmarter/ci-cd-workflows/.github/workflows/java-docker-deploy.yml@main
     with:
-      # Inventory env mapping (refs/heads/…)
-      branch_name: ${{ github.event_name == 'workflow_dispatch' && format('refs/heads/{0}', inputs.git_ref) || github.ref }}
-      # Which commit/branch of this repo to checkout (manual run can pick any listed branch)
-      git_ref: ${{ github.event_name == 'workflow_dispatch' && inputs.git_ref || github.sha }}
+      branch_name: ${{ format('refs/heads/{0}', inputs.git_ref) }}
+      git_ref: ${{ inputs.git_ref }}
       service_name: gateway
       project_root: "."
     secrets:
