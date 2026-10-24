@@ -13,10 +13,8 @@ public class PasswordResetVerifyCleaner implements Cleaner<PasswordResetVerifyRe
         if (req == null) return null;
 
         return new PasswordResetVerifyRequest(
-                // Token is a UUID, trim it but keep NFC
-                ValidatorUtil.normalize(req.token() != null ? req.token().trim() : null, Normalizer.Form.NFC),
-                // Password normalization (no trim)
-                ValidatorUtil.normalize(req.newPassword(), Normalizer.Form.NFKC)
+                ValidatorUtil.normalize(req.newPassword(), Normalizer.Form.NFKC),
+                ValidatorUtil.normalize(req.token() != null ? req.token().trim() : null, Normalizer.Form.NFC)
         );
     }
 }
